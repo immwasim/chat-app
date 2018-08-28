@@ -1,23 +1,55 @@
- //initiate client to server request to open up a web socket
- var socket = io();
+//initiate client to server request to open up a web socket
+var socket = io();
 
- //use function, not arrow for cross browser fucntionality. 
- socket.on('connect', function () {
-     console.log("client connected to server");
- })
+//use function, not arrow for cross browser fucntionality. 
+socket.on('connect', function () {
+    console.log("client connected to server");
+})
 
- socket.on('disconnect', function() {
-     console.log("server connection dropped");
- })
+socket.on('disconnect', function () {
+    console.log("server connection dropped");
+})
 
- socket.on('newMessage', function(message) {
+socket.on('newMessage', function (message) {
     console.log("new Message", message);
+    var li = jQuery('<li></li>');
+    li.text(`${message.from}: ${message.text}`)
+
+    jQuery('#messages').append(li);
 })
 
-socket.on('userJoined', function(message) {
-    console.log("userJoined", message);
+socket.on('newLocationMessage', function (message) {
+    var li = jQuery(`<li></li>`);
+    var a = $('<a target="_blank">current location of user</a>')
+    li.text(`${message.from}: `)
+    a.attr('href', message.url)
+    li.append(a);
+
+    jQuery('#messages').append(li);
 })
 
-socket.on('welcome', function(message) {
-    console.log("welcome", message);
+jQuery('#message-form').on('submit', function(e){
+    e.preventDefault();
+    socket.emit('createMessage',
+    {
+        from: 'User', 
+        text: jQuery('[name=message]').val()
+    }, function (data) {
+        console.log('server acknowledges', data);
+    });
 })
+
+var locationButton = $('#send-location');
+locationButton.on('click', function(){
+    if(!navigator.geolocation){
+        return alert('No geo in your browser');
+    }
+    navigator.geolocation.getCurrentPosition(function(position){
+        socket.emit('createLocationMessage', {
+            latitude:position.coords.latitude,
+            longitude:position.coords.longitude
+        })
+    }, function (){
+        alert('user denied permissions');
+    });
+});

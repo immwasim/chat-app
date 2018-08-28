@@ -1,5 +1,5 @@
 require('./../config/config');
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 
 var express = require('express');
 var socketIO = require('socket.io');
@@ -17,23 +17,25 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log('new user connected');
 
-    socket.emit('welcome',generateMessage('Admin', 'Welcome to chat'))
+    socket.emit('newMessage',generateMessage('Admin', 'Welcome to chat'))
 
-    socket.broadcast.emit('userJoined',generateMessage('Admin', 'New user joined'))
+    
+    socket.broadcast.emit('newMessage',generateMessage('Admin', 'New user joined'))
 
-    socket.on('createMessage', function (message) {
+    socket.on('createMessage', function (message, callback) {
         console.log('createMessage', message);
         //io emits to all connections.
         //socket emits to this one socket connection
+        //broadcast sends to all but self
         io.emit('newMessage',generateMessage(message.from, message.text))
-
-        //broadcast to all but the sender socket
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        // })
+        
+        //acknowledge receipt
+        callback({msg:'from server'});  
     });
+
+    socket.on('createLocationMessage', (coords) => {
+        io.emit('newLocationMessage',generateLocationMessage('Admin', `${coords.latitude}, ${coords.longitude}`))
+    })
 
     socket.on('disconnect', () => {
         console.log("client connection dropped");

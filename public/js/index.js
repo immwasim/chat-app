@@ -13,3 +13,11 @@
  socket.on('newMessage', function(message) {
     console.log("new Message", message);
 })
+
+socket.on('userJoined', function(message) {
+    console.log("userJoined", message);
+})
+
+socket.on('welcome', function(message) {
+    console.log("welcome", message);
+})

@@ -6,17 +6,6 @@
     <body>
         <p>oh hai! I iz chat</p>
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            //initiate client to server request to open up a web socket
-            var socket = io();
-            socket.on('connect', () => {
-                console.log("client connected to server");
-            })
-
-             socket.on('disconnect', () => {
-                console.log("server connection dropped");
-            })
-
-        </script>
+        <script src="/js/index.js"></script>
     </body>
 </html>

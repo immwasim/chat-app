@@ -15,6 +15,19 @@ var io = socketIO(server);
 
 io.on('connection', (socket) => {
     console.log('new user connected');
+
+    
+    socket.on('createMessage', function(message){
+        console.log('createMessage', message);
+        //io emits to all connections.
+        //socket emits to one connection
+        io.emit('newMessage',{
+            from:message.from,
+            text:message.text,
+            createdAt:new Date().getTime()
+        })
+    });
+
     socket.on('disconnect', () => {
         console.log("client connection dropped");
     })

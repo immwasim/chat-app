@@ -28,9 +28,7 @@ describe('generateLocationMessage', () => {
         var url = 'https://www.google.com/maps/@1,2';
         
         var message = generateLocationMessage(from, latitude, longitude);
-        //assert from match
-        //assert text match
-        //assert createdAt is a number
+  
         expect(typeof (message.createdAt)).toBe('number');
         expect(message).toMatchObject(
             {
